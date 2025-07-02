@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Events</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Recent GitHub Events</h1>
+  <ul id="events"></ul>
+
+  <script>
+    function fetchEvents() {
+      fetch('/events')
+        .then(res => res.json())
+        .then(data => {
+          const ul = document.getElementById("events");
+          ul.innerHTML = "";
+          data.forEach(item => {
+            let text = "";
+            if (item.action === "push") {
+              text = `${item.author} pushed to ${item.to_branch} on ${item.timestamp}`;
+            } else if (item.action === "pull_request") {
+              text = `${item.author} submitted a pull request from ${item.from_branch} to ${item.to_branch} on ${item.timestamp}`;
+            } else if (item.action === "merge") {
+              text = `${item.author} merged branch ${item.from_branch} to ${item.to_branch} on ${item.timestamp}`;
+            }
+            const li = document.createElement("li");
+            li.textContent = text;
+            ul.appendChild(li);
+          });
+        });
+    }
+
+    fetchEvents();
+    setInterval(fetchEvents, 15000);
+  </script>
+</body>
+</html>
